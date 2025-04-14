@@ -15,6 +15,7 @@ class Button extends Widget{
     private defaultFontSize: number = 18;
     private defaultWidth: number = 80;
     private defaultHeight: number = 30;
+    private _onClickCallback: (() => void) | null = null;
 
     constructor(parent:Window){
         super(parent);
@@ -31,6 +32,35 @@ class Button extends Widget{
         this.setState(new IdleUpWidgetState());
         // prevent text selection
         this.selectable = false;
+    }
+
+    // Custom label property to get and set the text on the button
+    get label(): string {
+        return this._input;
+    }
+
+    set label(value: string) {
+        this._input = value;
+        this.update();
+    }
+
+    // Custom size properties to get and set height and width
+    get buttonWidth(): number {
+        return this.width;
+    }
+
+    set buttonWidth(value: number) {
+        this.width = value;
+        this.update();
+    }
+
+    get buttonHeight(): number {
+        return this.height;
+    }
+
+    set buttonHeight(value: number) {
+        this.height = value;
+        this.update();
     }
 
     set fontSize(size:number){
@@ -51,7 +81,9 @@ class Button extends Widget{
     render(): void {
         this._group = (this.parent as Window).window.group();
         this._rect = this._group.rect(this.width, this.height);
-        this._rect.stroke("black");
+        this._rect.stroke("green");
+        this._rect.radius(5);
+        this._rect.fill("#4CAF50");
         this._text = this._group.text(this._input);
         // Set the outer svg element 
         this.outerSvg = this._group;
@@ -66,52 +98,71 @@ class Button extends Widget{
     }
 
     override update(): void {
-        if(this._text != null)
+        if(this._text != null) {
             this._text.font('size', this._fontSize);
             this._text.text(this._input);
             this.positionText();
+        }
 
-        if(this._rect != null)
+        if(this._rect != null) {
             this._rect.fill(this.backcolor);
+            this._rect.width(this.width);
+            this._rect.height(this.height);
+        }
         
         super.update();
     }
     
     pressReleaseState(): void{
-
-        if (this.previousState instanceof PressedWidgetState)
+        if (this.previousState instanceof PressedWidgetState) {
             this.raise(new EventArgs(this));
+            // Call the onClick callback if it exists
+            if (this._onClickCallback) {
+                this._onClickCallback();
+            }
+        }
     }
 
-    //TODO: implement the onClick event using a callback passed as a parameter
-    onClick(/*TODO: add callback parameter*/):void{}
+    onClick(callback: () => void): void {
+        this._onClickCallback = callback;
+    }
 
-    
-    //TODO: give the states something to do! Use these methods to control the visual appearance of your
-    //widget
     idleupState(): void {
-        throw new Error("Method not implemented.");
+        this._rect.fill("#4CAF50");
+        this._rect.stroke("#388E3C");
     }
+    
     idledownState(): void {
-        throw new Error("Method not implemented.");
+        this._rect.fill("#4CAF50"); 
+        this._rect.stroke("#388E3C");
     }
+    
     pressedState(): void {
-        throw new Error("Method not implemented.");
+        this._rect.fill("#2E7D32");
+        this._rect.stroke("#1B5E20"); 
     }
+    
     hoverState(): void {
-        throw new Error("Method not implemented.");
+        this._rect.fill("#66BB6A");
+        this._rect.stroke("#43A047");
     }
+    
     hoverPressedState(): void {
-        throw new Error("Method not implemented.");
+        this._rect.fill("#2E7D32");
+        this._rect.stroke("#1B5E20");
     }
+    
     pressedoutState(): void {
-        throw new Error("Method not implemented.");
+        this._rect.fill("#4CAF50");
+        this._rect.stroke("#388E3C");
     }
+    
     moveState(): void {
-        throw new Error("Method not implemented.");
+        // No special visual change for move state
     }
+    
     keyupState(keyEvent?: KeyboardEvent): void {
-        throw new Error("Method not implemented.");
+        // No special visual change for keyup state
     }
 }
 
