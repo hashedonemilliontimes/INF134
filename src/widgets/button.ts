@@ -87,14 +87,8 @@ class Button extends Widget{
         this._text = this._group.text(this._input);
         // Set the outer svg element 
         this.outerSvg = this._group;
-        // Add a transparent rect on top of text to 
-        // prevent selection cursor and to handle mouse events
-        let eventrect = this._group.rect(this.width, this.height).opacity(0).attr('id', 0);
-
-        // register objects that should receive event notifications.
-        // for this widget, we want to know when the group or rect objects
-        // receive events
-        this.registerEvent(eventrect);
+        // Register the main button rectangle for events so the whole area is clickable
+        this.registerEvent(this._rect);
     }
 
     override update(): void {
